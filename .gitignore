@@ -1,3 +1,5 @@
+.gitignore
 test.py
 __init__.py
 setup.py
+schupy.pdf

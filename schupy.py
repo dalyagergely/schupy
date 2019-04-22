@@ -1,16 +1,23 @@
 import numpy as np
-import math
 import matplotlib.pyplot as plt
-import sys
+from random import random
+
+eps = 8.8541878e-12
+mu = 4.0e-7 * np.pi
+R = 6371000.0
 
 
 def plot_map(
     s_lat, s_lon, s_int, m_lat, m_lon, show=True, save=False, filename="schupy_map.png"
 ):
     import cartopy.crs as ccrs
+    
+    assert len(s_lat) == len(s_lon), 's_lat should have the same number of ' \
+                                     'elements as s_lon'
 
     fig = plt.figure(figsize=(6, 3))
     ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
+    
     ax.text(
         -0.12,
         0.55,
@@ -21,6 +28,7 @@ def plot_map(
         rotation_mode="anchor",
         transform=ax.transAxes,
     )
+    
     ax.text(
         0.5,
         -0.2,
@@ -31,6 +39,7 @@ def plot_map(
         rotation_mode="anchor",
         transform=ax.transAxes,
     )
+    
     ax.coastlines()
     ax.stock_img()
 
@@ -44,14 +53,23 @@ def plot_map(
     gl.xlabels_top = False
     gl.ylabels_right = False
 
-    for s in range(len(s_lat)):
-        ax.scatter(s_lon[s], s_lat[s], c="orange", s=80, alpha=1)
+    for lon, lat in zip(s_lon, s_lat):
+        ax.scatter(
+            lon,
+            lat,
+            c='orange',
+            s=80,
+            alpha=1
+        )
 
     plt.tight_layout()
+    
     if show:
         plt.show()
+        
     if save:
         plt.savefig(filename, dpi=300)
+        
     plt.close()
 
 
@@ -68,22 +86,26 @@ def height_calculation(
 ):
     """
     Mushtak and Williams (2002)
+    Itt érdemes az opcinális argumentumok értelmét jobban kifejteni.
+    Pl. mit jelent a hm, kszim, stb.
     """
-    He = np.zeros(len(freq), dtype=complex)
-    Hm = np.zeros(len(freq), dtype=complex)
-
-    for i in range(len(freq)):
-        Re_He = (
+    
+    freq = np.asarray(freq)
+    assert freq.ndim == 1, 'Expected 1D array freq.'
+    nfreq = len(freq)
+    
+    Re_He = (
             hkn
-            + kszia * np.log(freq[i] / fkn)
-            + 0.5 * (kszia - kszib) * np.log(1 + (fkn / freq[i]) ** 2)
+            + kszia * np.log(freq / fkn)
+            + 0.5 * (kszia - kszib) * np.log(1 + (fkn / freq) ** 2)
         )
-        Im_He = -0.5 * math.pi * kszia + (kszia - kszib) * math.atan(fkn / freq[i])
-        Re_Hm = hm - (kszim + bm * (1 / freq[i] - 1 / fm)) * np.log(freq[i] / fm)
-        Im_Hm = 0.5 * math.pi * (kszim + bm * (1 / freq[i] - 1 / fm))
 
-        He[i] = complex(Re_He, Im_He)
-        Hm[i] = complex(Re_Hm, Im_Hm)
+    Im_He = -0.5 * np.pi * kszia + (kszia - kszib) * np.arctan(fkn / freq)
+    Re_Hm = hm - (kszim + bm * (1 / freq - 1 / fm)) * np.log(freq / fm)
+    Im_Hm = 0.5 * np.pi * (kszim + bm * (1 / freq - 1 / fm))
+    
+    He = Re_He + 1j * Im_He
+    Hm = Re_Hm + 1j * Im_Hm
 
     return He, Hm
 
@@ -91,65 +113,68 @@ def height_calculation(
 def height_calculation_kul(freq):
     """
     Kulak and Mlynarczyk (2013)
+    Tamás, ide is írhatnál még valamit, mint az előzőhöz
     """
-    HE_n = np.zeros(len(freq), dtype=complex)
-    HM_n = np.zeros(len(freq), dtype=complex)
-    HE_d = np.zeros(len(freq), dtype=complex)
-    HM_d = np.zeros(len(freq), dtype=complex)
+    
+    freq = np.asarray(freq)
+    assert freq.ndim == 1, 'Expected 1D array freq.'
+    nfreq = len(freq)
+    
+    Re_He_n = (
+        67.5
+        + 2 * np.log(freq / 7.7)
+        - 2.54 * (7.7 / freq) ** 0.813
+        - 2.72 * (7.7 / freq) ** 1.626
+    )
+    
+    Im_He_n = (
+        -3.14 - 8.70 * (7.7 / freq) ** 0.813 + 1.92 * (7.7 / freq) ** 1.626
+    )
 
-    for i in range(len(freq)):
-        Re_He_n = (
-            67.5
-            + 2 * np.log(freq[i] / 7.7)
-            - 2.54 * (7.7 / freq[i]) ** 0.813
-            - 2.72 * (7.7 / freq[i]) ** 1.626
-        )
-        Im_He_n = (
-            -3.14 - 8.70 * (7.7 / freq[i]) ** 0.813 + 1.92 * (7.7 / freq[i]) ** 1.626
-        )
-        Re_Hm_n = 114.7 - 8.4 * np.log(freq[i] / 7.7)
-        Im_Hm_n = 13.2 - 2.0 * np.log(freq[i] / 7.7)
+    Re_Hm_n = 114.7 - 8.4 * np.log(freq / 7.7)
+    Im_Hm_n = 13.2 - 2.0 * np.log(freq / 7.7)
 
-        Re_He_d = (
-            51.1
-            + 1.9 * np.log(freq[i] / 1.7)
-            - 2.45 * (1.7 / freq[i]) ** 0.822
-            - 2.84 * (1.7 / freq[i]) ** 1.645
-        )
-        Im_He_d = (
-            -2.98 - 8.80 * (1.7 / freq[i]) ** 0.822 + 1.86 * (1.7 / freq[i]) ** 1.645
-        )
-        Re_Hm_d = 101.5 - 3.1 * np.log(freq[i] / 7.7)
-        Im_Hm_d = 7.0 - 0.9 * np.log(freq[i] / 7.7)
-
-        HE_n[i] = 1000 * complex(Re_He_n, Im_He_n)
-        HM_n[i] = 1000 * complex(Re_Hm_n, Im_Hm_n)
-        HE_d[i] = 1000 * complex(Re_He_d, Im_He_d)
-        HM_d[i] = 1000 * complex(Re_Hm_d, Im_Hm_d)
+    Re_He_d = (
+        51.1
+        + 1.9 * np.log(freq / 1.7)
+        - 2.45 * (1.7 / freq) ** 0.822
+        - 2.84 * (1.7 / freq) ** 1.645
+    )
+    
+    Im_He_d = (
+        -2.98 - 8.80 * (1.7 / freq) ** 0.822 + 1.86 * (1.7 / freq) ** 1.645
+    )
+    
+    Re_Hm_d = 101.5 - 3.1 * np.log(freq / 7.7)
+    Im_Hm_d = 7.0 - 0.9 * np.log(freq / 7.7)
+    
+    HE_n = 1000 * (Re_He_n + 1j * Im_He_n)
+    HM_n = 1000 * (Re_Hm_n + 1j * Im_Hm_n)
+    HE_d = 1000 * (Re_He_d + 1j * Im_He_d)
+    HM_d = 1000 * (Re_Hm_d + 1j * Im_Hm_d)
 
     return 0.5 * (HE_n + HE_d), 0.5 * (HM_n + HM_d)
 
 
 def ZYR2_cal(freq, R):
-    eps = 8.8541878e-12
-    mu = 4.0e-7 * math.pi
-
     He, Hm = (
         height_calculation(freq)
         if height == "mushtak"
         else height_calculation_kul(freq)
     )
+    
     C = eps / He
     L = mu * Hm
-    Z = 1j * 2 * math.pi * freq * L
-    Y = -1j * 2 * math.pi * freq * C
+    Z = 1j * 2 * np.pi * freq * L
+    Y = -1j * 2 * np.pi * freq * C
 
     return Y * Z * R * R
 
 
 def greens(freq, R, xs, ps, xm, pm, n):
     ZYR2 = ZYR2_cal(freq, R)
-    cg = xm * xs + math.sqrt(1 - xm * xm) * math.sqrt(1 - xs * xs) * math.cos(pm - ps)
+    
+    cg = xm * xs + np.sqrt(1 - xm * xm) * np.sqrt(1 - xs * xs) * np.cos(pm - ps)
     p0 = 1
     p1 = cg
     gr = -p0 / ZYR2
@@ -161,18 +186,22 @@ def greens(freq, R, xs, ps, xm, pm, n):
         p0 = p1
         p1 = pn
 
-    return gr / (4 * math.pi)
+    return gr / (4 * np.pi)
 
 
 def greens_d(freq, R, xs, ps, xm, pm, n, t):
     ZYR2 = ZYR2_cal(freq, R)
-    cg = xm * xs + math.sqrt(1 - xm * xm) * math.sqrt(1 - xs * xs) * math.cos(pm - ps)
+    cg = xm * xs + np.sqrt(1 - xm * xm) * np.sqrt(1 - xs * xs) \
+         * np.cos(pm - ps)
+         
     p0 = 1.0
     p0d = 0.0
     p1 = cg
     p1d = 1.0
+    
     gr = -p0d / ZYR2
     gr = gr + 3.0 * p1d / (2.0 - ZYR2)
+    
     for n in range(2, n):
         pn = ((2 * n - 1.0) * p1 * cg - (n - 1) * p0) / n
         pnd = (2 * n - 1.0) * p1 + p0d
@@ -185,30 +214,31 @@ def greens_d(freq, R, xs, ps, xm, pm, n, t):
 
     if t == 1:
         gr = gr * (
-            -math.sqrt(1.0 - xm * xm) * xs
-            + xm * math.sqrt(1.0 - xs * xs) * math.cos(pm - ps)
+            -np.sqrt(1.0 - xm * xm) * xs
+            + xm * np.sqrt(1.0 - xs * xs) * np.cos(pm - ps)
         )
     if t == 2:
         gr = (
             -gr
-            * math.sqrt(1.0 - xm * xm)
-            * math.sqrt(1.0 - xs * xs)
-            * math.sin(pm - ps)
+            * np.sqrt(1.0 - xm * xm)
+            * np.sqrt(1.0 - xs * xs)
+            * np.sin(pm - ps)
         )
 
-    return gr / (4 * math.pi)
+    return gr / (4 * np.pi)
 
 
-def extended(s_lat, s_lon, s_int, radius, R, n=100):
-    from random import random
+def extended(s_lat, s_lon, s_int, radius, R, num=100):
 
     def rotation_matrix(axis, theta):
         axis = np.asarray(axis)
-        axis = axis / math.sqrt(np.dot(axis, axis))
-        a = math.cos(theta / 2.0)
-        b, c, d = -axis * math.sin(theta / 2.0)
+        axis = axis / np.sqrt(np.dot(axis, axis))
+        
+        a = np.cos(theta / 2.0)
+        b, c, d = -axis * np.sin(theta / 2.0)
         aa, bb, cc, dd = a * a, b * b, c * c, d * d
         bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
+        
         return np.array(
             [
                 [aa + bb - cc - dd, 2 * (bc + ad), 2 * (bd - ac)],
@@ -225,17 +255,17 @@ def extended(s_lat, s_lon, s_int, radius, R, n=100):
             phi = lon
 
         return [
-            math.sin(math.radians(theta)) * math.cos(math.radians(phi)),
-            math.sin(math.radians(theta)) * math.sin(math.radians(phi)),
-            math.cos(math.radians(theta)),
+            np.sin(np.radians(theta)) * np.cos(np.radians(phi)),
+            np.sin(np.radians(theta)) * np.sin(np.radians(phi)),
+            np.cos(np.radians(theta)),
         ]
 
     def CtoS(r):
         x = r[0]
         y = r[1]
         z = r[2]
-        theta = math.degrees(math.acos(z / np.linalg.norm(r)))
-        phi = math.degrees(math.atan2(y, x))
+        theta = np.degrees(np.arccos(z / np.linalg.norm(r)))
+        phi = np.degrees(np.arctan2(y, x))
 
         lat = 90 - theta
         if phi > 180:
@@ -243,10 +273,10 @@ def extended(s_lat, s_lon, s_int, radius, R, n=100):
         else:
             lon = phi
 
-        return [lat, lon]
+        return lat, lon
 
     def Delta(r1, r2):
-        return math.degrees(math.acos(np.dot(r1, r2)))
+        return np.degrees(np.arccos(np.dot(r1, r2)))
 
     for k in range(len(s_lat)):
         phi = []
@@ -254,36 +284,36 @@ def extended(s_lat, s_lon, s_int, radius, R, n=100):
 
         lim = 1 - np.cos(radius * 1000000 / R)
 
-        for i in range(n):
+        for i in range(num):
             phi.append(random() * 2 * np.pi)
             theta.append(np.arccos(1 - random() * lim))
 
         lat1 = []
         lon1 = []
 
-        for i in range(n):
-            lat1.append(90 - math.degrees(theta[i]))
+        for i in range(num):
+            lat1.append(90 - np.degrees(theta[i]))
             if phi[i] > np.pi:
-                lon1.append(math.degrees(phi[i]) - 360)
+                lon1.append(np.degrees(phi[i]) - 360)
             else:
-                lon1.append(math.degrees(phi[i]))
+                lon1.append(np.degrees(phi[i]))
 
         rotation_ax = np.cross(StoC(90, 0), StoC(s_lat[k], s_lon[k]))
         gamma = Delta(StoC(90, 0), StoC(s_lat[k], s_lon[k]))
 
-        lat_new = np.zeros(n)
-        lon_new = np.zeros(n)
+        lat_new = np.zeros(num)
+        lon_new = np.zeros(num)
 
-        for i in range(n):
+        for i in range(num):
             [lat_new[i], lon_new[i]] = CtoS(
-                rotation_matrix(rotation_ax, math.radians(gamma)).dot(
+                rotation_matrix(rotation_ax, np.radians(gamma)).dot(
                     StoC(lat1[i], lon1[i])
                 )
             )
 
             s_lon_ext.append(lon_new[i])
             s_lat_ext.append(lat_new[i])
-            s_int_ext.append(s_int[k] / n)
+            s_int_ext.append(s_int[k] / num)
 
 
 def forward_tdte(
@@ -299,14 +329,10 @@ def forward_tdte(
     n=500,
     h="mushtak",
     ret="all",
-    mapshow=True
-    mapsave=False
+    mapshow=True,
+    mapsave=False,
     mapfilename="schupy_map.png"
 ):
-
-    R = 6371000
-    mu = 4.0e-7 * math.pi
-    eps = 8.8541878e-12
 
     try:
         len(s_lat)
@@ -315,14 +341,12 @@ def forward_tdte(
         s_lon = [s_lon]
         s_int = [s_int]
 
-    if len(s_lat) != len(s_lon) or len(s_lat) != len(s_int):
-        raise Exception(
+    assert len(s_lat) == len(s_lon) or len(s_lat) == len(s_int), \
             "s_lat, s_lon and s_int should have the same number of elements."
-        )
-    # if m_lat.size != m_lon.size:
-    #    raise Exception("m_lat and m_lon should have the same number of elements.")
+    
     if h not in ["mushtak", "kulak"]:
         raise ValueError("Height calculation should be set either to mushtak or kulak.")
+        
     if ret not in [
         "all",
         "ER",
@@ -340,8 +364,11 @@ def forward_tdte(
         "Btheta",
     ]:
         raise ValueError(
-            "Returned value could either be Er (set ER, Er, or er), Bphi (set BP, Bp, bp, Bphi or bphi), Bt (set BT, Bt, bt, Btheta or btheta) or all of the above (set all)."
+            "Returned value could either be Er (set ER, Er, or er), "
+            "Bphi (set BP, Bp, bp, Bphi or bphi), "
+            "Bt (set BT, Bt, bt, Btheta or btheta) or all of the above (set all)."
         )
+        
     if radius < 0:
         raise ValueError(
             "Radius should be 0 for point sources and a positive number for extended sources."
@@ -362,12 +389,12 @@ def forward_tdte(
         s_lat = s_lat_ext
         s_int = s_int_ext
 
-    if mapshow = True or mapsave = True:
+    if mapshow == True or mapsave == True:
         plot_map(s_lat, s_lon, s_int, m_lat, m_lon, show=mapshow, save=mapsave, filename=mapfilename)
         
 
     freq = np.arange(f_min, f_max, f_step)
-    omega = 2 * math.pi * freq
+    omega = 2 * np.pi * freq
 
     global height
     height = "mushtak" if h == "mushtak" else "kulak"
@@ -385,10 +412,10 @@ def forward_tdte(
         ez = greens(
             freq,
             R,
-            math.cos(math.radians(90 - s_lat[s])),
-            math.radians(s_lon[s]),
-            math.cos(math.radians(90.0 - float(m_lat))),
-            math.radians(float(m_lon)),
+            np.cos(np.radians(90 - s_lat[s])),
+            np.radians(s_lon[s]),
+            np.cos(np.radians(90.0 - float(m_lat))),
+            np.radians(float(m_lon)),
             n,
         )
         ez = np.abs(1000 * ez * (1j * omega * mu * hm) / he ** 2) ** 2
@@ -397,10 +424,10 @@ def forward_tdte(
         bph = greens_d(
             freq,
             R,
-            math.cos(math.radians(90 - s_lat[s])),
-            math.radians(s_lon[s]),
-            math.cos(math.radians(90.0 - float(m_lat))),
-            math.radians(float(m_lon)),
+            np.cos(np.radians(90 - s_lat[s])),
+            np.radians(s_lon[s]),
+            np.cos(np.radians(90.0 - float(m_lat))),
+            np.radians(float(m_lon)),
             n,
             1,
         )
@@ -410,16 +437,16 @@ def forward_tdte(
         bt = greens_d(
             freq,
             R,
-            math.cos(math.radians(90 - s_lat[s])),
-            math.radians(s_lon[s]),
-            math.cos(math.radians(90.0 - float(m_lat))),
-            math.radians(float(m_lon)),
+            np.cos(np.radians(90 - s_lat[s])),
+            np.radians(s_lon[s]),
+            np.cos(np.radians(90.0 - float(m_lat))),
+            np.radians(float(m_lon)),
             n,
             2,
         )
         bt = (
             np.abs(
-                1e12 * bt * mu / (he * R * math.sin(math.radians(90 - float(m_lat))))
+                1e12 * bt * mu / (he * R * np.sin(np.radians(90 - float(m_lat))))
             )
             ** 2
         )

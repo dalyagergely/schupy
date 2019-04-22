@@ -1,4 +1,4 @@
-# schupy -- A python package for modeling Schuman resonances
+# schupy -- A python package for modeling Schumann resonances
 
 Schupy models Schumann resonances (SRs), the electromagnetic eigenmodes of the Earth-ionosphere cavity resonator in the lowest part of the extremely low frequency band (<100 Hz). The code uses the solution of the 2-D telegraph equation obtained for uniform cavity and is able to determine the theoretical SR spectrum for arbitrary source-observer configuration. It can be applied for both modeling extraordinary large SR-transients (Q-bursts) or "background" SRs induced by incoherently superimposed strokes.
 
