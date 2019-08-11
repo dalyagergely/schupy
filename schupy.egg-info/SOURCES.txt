@@ -1,5 +1,7 @@
 README.md
 setup.py
+schupy/__init__.py
+schupy/schupy.py
 schupy.egg-info/PKG-INFO
 schupy.egg-info/SOURCES.txt
 schupy.egg-info/dependency_links.txt
