@@ -459,7 +459,7 @@ def forward_tdte(
     plt.subplot(3, 1, 1)
     plt.title("Obsevation site: " + r"$(%d^o,%d^o)$" % (m_lat, m_lon), fontsize=18)
     plt.plot(freq, Ez)
-    plt.ylabel(r"$E_z\ [mV^2/m^2/Hz]$", fontsize=16)
+    plt.ylabel(r"$E_r\ [mV^2/m^2/Hz]$", fontsize=16)
     plt.xticks(
         np.arange(f_min - 1, f_max + 3, 2), len(np.arange(f_min - 1, f_max + 3, 2)) * []
     )
