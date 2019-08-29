@@ -24,6 +24,7 @@ The function takes the following arguments:
 | `mapshow` | BOOL | Sets whether to show a map of the sources and the station or not |  | False |
 | `mapsave` | BOOL | Sets whether to save the map of the sources and the station or not |  | False |
 | `mapfilename` | STR | Name of the file to save the map into |  | schupy_map.png
+| `plotshow` | BOOL | Sets whether to plot the power spectral densities or not |  | False |
 
 | Name        | Type           | Description  |  Default value | Possible values |
 | ------------- |:-------------:| ------------- | ------------ |  ---------- |
@@ -55,7 +56,7 @@ source_intensities = [1e5, 8e4, 7e4]
 obs_latitude = 47.6
 obs_longitude = 16.7
 
-sp.forward_tdte(source_latitudes, source_longitudes, source_intensities, obs_latitude, obs_longitude, h='mushtak', ret='Bphi', radius = 0, mapshow = False, mapsave = False)
+sp.forward_tdte(source_latitudes, source_longitudes, source_intensities, obs_latitude, obs_longitude, h='mushtak', ret='Bphi', radius = 0, mapshow = False, mapsave = False, plotshow = True)
 ~~~~
  
 

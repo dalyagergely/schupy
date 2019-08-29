@@ -331,7 +331,8 @@ def forward_tdte(
     ret="all",
     mapshow=False,
     mapsave=False,
-    mapfilename="schupy_map.png"
+    mapfilename="schupy_map.png",
+    plotshow=False
 ):
 
     try:
@@ -455,39 +456,40 @@ def forward_tdte(
         )
         Bt = Bt + bt * s_int[s]
 
-    plt.rcParams["figure.figsize"] = [12, 7]
-    plt.subplot(3, 1, 1)
-    plt.title("Obsevation site: " + r"$(%d^o,%d^o)$" % (m_lat, m_lon), fontsize=18)
-    plt.plot(freq, Ez)
-    plt.ylabel(r"$E_r\ [mV^2/m^2/Hz]$", fontsize=16)
-    plt.xticks(
-        np.arange(f_min - 1, f_max + 3, 2), len(np.arange(f_min - 1, f_max + 3, 2)) * []
-    )
-    plt.xlim([f_min - 1, f_max + 1])
-    plt.tick_params(axis="both", which="major", labelsize=14)
-    plt.grid()
+    if plotshow == True:
+        plt.rcParams["figure.figsize"] = [12, 7]
+        plt.subplot(3, 1, 1)
+        plt.title("Obsevation site: " + r"$(%d^o,%d^o)$" % (m_lat, m_lon), fontsize=18)
+        plt.plot(freq, Ez)
+        plt.ylabel(r"$E_r\ [mV^2/m^2/Hz]$", fontsize=16)
+        plt.xticks(
+            np.arange(f_min - 1, f_max + 3, 2), len(np.arange(f_min - 1, f_max + 3, 2)) * []
+        )
+        plt.xlim([f_min - 1, f_max + 1])
+        plt.tick_params(axis="both", which="major", labelsize=14)
+        plt.grid()
 
-    plt.subplot(3, 1, 2)
-    plt.plot(freq, Bt)
-    plt.ylabel(r"$B_{\vartheta}\ [pT^2/Hz]$", fontsize=16)
-    plt.xticks(
-        np.arange(f_min - 1, f_max + 3, 2), len(np.arange(f_min - 1, f_max + 3, 2)) * []
-    )
-    plt.xlim([f_min - 1, f_max + 1])
-    plt.tick_params(axis="both", which="major", labelsize=14)
-    plt.grid()
+        plt.subplot(3, 1, 2)
+        plt.plot(freq, Bt)
+        plt.ylabel(r"$B_{\vartheta}\ [pT^2/Hz]$", fontsize=16)
+        plt.xticks(
+            np.arange(f_min - 1, f_max + 3, 2), len(np.arange(f_min - 1, f_max + 3, 2)) * []
+        )
+        plt.xlim([f_min - 1, f_max + 1])
+        plt.tick_params(axis="both", which="major", labelsize=14)
+        plt.grid()
 
-    plt.subplot(3, 1, 3)
-    plt.plot(freq, Bph)
-    plt.ylabel(r"$B_{\varphi}\ [pT^2/Hz]$", fontsize=16)
-    plt.xticks(np.arange(f_min - 1, f_max + 3, 2))
-    plt.xlim([f_min - 1, f_max + 1])
-    plt.xlabel("Frequency [Hz]", fontsize=16)
-    plt.tick_params(axis="both", which="major", labelsize=14)
-    plt.grid()
+        plt.subplot(3, 1, 3)
+        plt.plot(freq, Bph)
+        plt.ylabel(r"$B_{\varphi}\ [pT^2/Hz]$", fontsize=16)
+        plt.xticks(np.arange(f_min - 1, f_max + 3, 2))
+        plt.xlim([f_min - 1, f_max + 1])
+        plt.xlabel("Frequency [Hz]", fontsize=16)
+        plt.tick_params(axis="both", which="major", labelsize=14)
+        plt.grid()
 
-    plt.tight_layout()
-    plt.show()
+        plt.tight_layout()
+        plt.show()
 
     if ret == "all":
         return Ez, Bt, Bph

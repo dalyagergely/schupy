@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: schupy
-Version: 1.0.7
+Version: 1.0.8
 Summary: A python package for modeling Schumann resonances
 Home-page: https://github.com/dalyagergely/schupy
 Author: Gergely Dálya, Tamás Bozóki, Kornél Kapás, János Takátsy, Ernő Prácser, Gabriella Sátori
@@ -32,6 +32,7 @@ Description: # schupy -- A python package for modeling and analyzing Schumann re
         | `mapshow` | BOOL | Sets whether to show a map of the sources and the station or not |  | False |
         | `mapsave` | BOOL | Sets whether to save the map of the sources and the station or not |  | False |
         | `mapfilename` | STR | Name of the file to save the map into |  | schupy_map.png
+        | `plotshow` | BOOL | Sets whether to plot the power spectral densities or not |  | False |
         
         | Name        | Type           | Description  |  Default value | Possible values |
         | ------------- |:-------------:| ------------- | ------------ |  ---------- |
@@ -63,7 +64,7 @@ Description: # schupy -- A python package for modeling and analyzing Schumann re
         obs_latitude = 47.6
         obs_longitude = 16.7
         
-        sp.forward_tdte(source_latitudes, source_longitudes, source_intensities, obs_latitude, obs_longitude, h='mushtak', ret='Bphi', radius = 0, mapshow = False, mapsave = False)
+        sp.forward_tdte(source_latitudes, source_longitudes, source_intensities, obs_latitude, obs_longitude, h='mushtak', ret='Bphi', radius = 0, mapshow = False, mapsave = False, plotshow = True)
         ~~~~
          
         
