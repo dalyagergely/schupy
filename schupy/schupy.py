@@ -322,9 +322,10 @@ def forward_tdte(
     s_int,
     m_lat,
     m_lon,
-    f_min=5.0,
-    f_max=30.0,
-    f_step=0.1,
+#    f_min=5.0,
+#    f_max=30.0,
+#    f_step=0.1,
+    freq,
     radius=0,
     n=500,
     h="mushtak",
@@ -341,6 +342,11 @@ def forward_tdte(
         s_lat = [s_lat]
         s_lon = [s_lon]
         s_int = [s_int]
+        
+    try:
+        len(freq)
+    except TypeError:
+        freq = [freq]
         
     for i in range(len(s_int)):
         s_int[i] = s_int[i] * 1e6
@@ -397,7 +403,7 @@ def forward_tdte(
         plot_map(s_lat, s_lon, s_int, m_lat, m_lon, show=mapshow, save=mapsave, filename=mapfilename)
         
 
-    freq = np.arange(f_min, f_max, f_step)
+    #freq = np.arange(f_min, f_max, f_step)
     omega = 2 * np.pi * freq
 
     global height

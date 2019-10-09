@@ -16,9 +16,7 @@ The function takes the following arguments:
 | `s_int` | LIST | Intensiti(es) of the source(s) | C^2 km^2 s^-1 |
 | `m_lat` | FLOAT | Geographical latitude of the observing station | deg |
 | `m_lon` | FLOAT | Geographical longitude of the observing station | deg |
-| `f_min` | FLOAT | Minimum frequency of the spectrum | Hz | 5 |
-| `f_max` | FLOAT | Maximum frequency of the spectrum | Hz | 30 |
-| `f_step` | FLOAT | Frequency resolution of the spectrum | Hz | 0.1 |
+| `freq` | LIST | Field components are calculated on these frequencies | Hz |
 | `radius` | FLOAT | Radius of the extended sources (0 in the case of pointsource(s)) | Mm | 0 |
 | `n` | INT | Maximal order of Legendre-polynomials to sum |  | 500 |
 | `mapshow` | BOOL | Sets whether to show a map of the sources and the station or not |  | False |
@@ -49,14 +47,16 @@ The function plots and returns the following quantities at the location of the g
 An exaple to how to run the function:
 ~~~~
 import schupy as sp
+import numpy as np
 
 source_latitudes = [10.0, 0.0, 0.0]
 source_longitudes = [10.0, -80.0, 110.0]
 source_intensities = [1e5, 8e4, 7e4]
+frequencies = np.arange(5, 30, 0.1)
 obs_latitude = 47.6
 obs_longitude = 16.7
 
-sp.forward_tdte(source_latitudes, source_longitudes, source_intensities, obs_latitude, obs_longitude, h='mushtak', ret='Bphi', radius = 0, mapshow = False, mapsave = False, plotshow = True)
+sp.forward_tdte(source_latitudes, source_longitudes, source_intensities, obs_latitude, obs_longitude, frequencies, h='mushtak', ret='Bphi', radius = 0, mapshow = False, mapsave = False, plotshow = True)
 ~~~~
  
 
