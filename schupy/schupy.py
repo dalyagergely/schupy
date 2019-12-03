@@ -463,6 +463,8 @@ def forward_tdte(
         Bt = Bt + bt * s_int[s]
 
     if plotshow == True:
+        f_min = min(freq)
+        f_max = max(freq)
         plt.rcParams["figure.figsize"] = [12, 7]
         plt.subplot(3, 1, 1)
         plt.title("Obsevation site: " + r"$(%d^o,%d^o)$" % (m_lat, m_lon), fontsize=18)
