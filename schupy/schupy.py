@@ -86,8 +86,6 @@ def height_calculation(
 ):
     """
     Mushtak and Williams (2002)
-    Itt érdemes az opcinális argumentumok értelmét jobban kifejteni.
-    Pl. mit jelent a hm, kszim, stb.
     """
     
     freq = np.asarray(freq)
@@ -113,7 +111,6 @@ def height_calculation(
 def height_calculation_kul(freq):
     """
     Kulak and Mlynarczyk (2013)
-    Tamás, ide is írhatnál még valamit, mint az előzőhöz
     """
     
     freq = np.asarray(freq)
