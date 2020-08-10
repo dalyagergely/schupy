@@ -63,7 +63,7 @@ sp.forward_tdte(source_latitudes, source_longitudes, source_intensities, obs_lat
 
 ## Acknowledgement
 
-The schupy package is developed by G. Dálya, T. Bozóki, K. Kapás, J. Takátsy, E. Prácser and G. Sátori. Please send your questions and comments to `dalyag@caesar.elte.hu`. If you use the Schupy package for your research, please cite our paper:
+The schupy package is developed by G. Dalya, T. Bozoki, K. Kapas, J. Takatsy, E. Pracser and G. Satori. Please send your questions and comments to `dalyag@caesar.elte.hu`. If you use the Schupy package for your research, please cite our paper:
 
 @article{BOZOKI2019105144,
 title = "Modeling Schumann resonances with schupy",
@@ -74,8 +74,8 @@ year = "2019",
 issn = "1364-6826",
 doi = "https://doi.org/10.1016/j.jastp.2019.105144",
 url = "http://www.sciencedirect.com/science/article/pii/S1364682619304134",
-author = "Tamás Bozóki and Ernő Prácser and Gabriella Sátori and Gergely Dálya and Kornél Kapás and János Takátsy",
+author = "Tamás Bozoki and Erno Pracser and Gabriella Satori and Gergely Dalya and Kornel Kapas and Janos Takatsy",
 keywords = "Schumann resonances, Earth-ionosphere cavity, Numerical model, Python package",
-abstract = "Schupy is an open-source python package aimed at modeling and analyzing Schumann resonances (SRs), the global electromagnetic resonances of the Earth-ionosphere cavity resonator in the lowest part of the extremely low frequency band (<100 Hz). Its very-first function forward_tdte applies the solution of the 2-D telegraph equation introduced recently by Prácser et al. (2019) for a uniform cavity and is able to determine theoretical SR spectra for arbitrary source-observer configurations. It can be applied for both modeling extraordinarily large SR-transients or “background” SRs excited by incoherently superimposed lightning strokes within an extended source region. Three short studies are presented which might be important for SR related research. With the forward_tdte function our aim is to provide a medium complexity numerical background for the interpretation of SR observations. We would like to encourage the community to join our project in developing open-source analyzing capacities for SR research as part of the schupy package."
+abstract = "Schupy is an open-source python package aimed at modeling and analyzing Schumann resonances (SRs), the global electromagnetic resonances of the Earth-ionosphere cavity resonator in the lowest part of the extremely low frequency band (<100 Hz). Its very-first function forward_tdte applies the solution of the 2-D telegraph equation introduced recently by Prácser et al. (2019) for a uniform cavity and is able to determine theoretical SR spectra for arbitrary source-observer configurations. It can be applied for both modeling extraordinarily large SR-transients or “background” SRs excited by incoherently superimposed lightning strokes within an extended source region. Three short studies are presented which might be important for SR related research. With the forward_tdte function our aim is to provide a medium complexity numerical background for the interpretation of SR observations. We would like to encourage the community to join our project in developing open-source analyzing capacities for SR research as part of the schupy package."
 }
 
