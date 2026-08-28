@@ -16,7 +16,7 @@ def forward_tdte(
     m_lat: float,
     m_lon: float,
     freq: Union[float, Sequence[float], np.ndarray],
-    n_max: int = 5000,
+    n_max: int = 10000,
     h: Union[str, HeightModel] = "mushtak",
     tau: float = 0.0,
     ret: str = "all",
@@ -40,19 +40,19 @@ def forward_tdte(
     freq : float or array_like
         Frequencies at which to compute spectra [Hz].
     n_max : int, optional
-        Maximum order of Legendre polynomials in summation (default: 5000).
+        Maximum order of Legendre polynomials in summation (default: 10000).
     h : str or HeightModel, optional
         Height calculation model ('mushtak' or 'kulak', default: 'mushtak').
     tau : float, optional
         Decay time constant for continuing current in seconds (default: 0.0).
         tau=0.0 corresponds to Dirac-delta (impulsive) excitation.
     ret : str, optional
-        Returned components: 'all' (default), 'er', 'b_ns', or 'b_ew'.
+        Returned components: 'all' (default), 'e_z' (or 'ez'/'er'), 'b_ns', or 'b_ew'.
 
     Returns
     -------
     result : SRSpectrum or np.ndarray
-        If ret='all', returns SRSpectrum(freq, Er, B_NS, B_EW).
+        If ret='all', returns SRSpectrum(freq, E_z, B_NS, B_EW).
         Otherwise returns the specified 1D numpy array.
     """
     s_lat_arr = np.atleast_1d(np.asarray(s_lat, dtype=float))
@@ -68,7 +68,7 @@ def forward_tdte(
     omega = 2.0 * np.pi * freq_arr
     he, hm = get_heights(freq_arr, h=h)
 
-    Ez = np.zeros(len(freq_arr), dtype=float)
+    E_z = np.zeros(len(freq_arr), dtype=float)
     B_EW = np.zeros(len(freq_arr), dtype=float)
     B_NS = np.zeros(len(freq_arr), dtype=float)
 
@@ -80,10 +80,10 @@ def forward_tdte(
         xs = np.sin(np.radians(s_lat_arr[s]))
         ps = np.radians(s_lon_arr[s])
 
-        # Vertical electric field Er
+        # Vertical electric field E_z
         ez = greens(freq_arr, EARTH_RADIUS, xs, ps, xm, pm, n_max=n_max, h=h)
         ez_amp = np.abs(1000.0 * ez * (1j * omega * MU0 * hm) / (he ** 2)) ** 2
-        Ez += ez_amp * s_int_arr[s]
+        E_z += ez_amp * s_int_arr[s]
 
         # East-West horizontal magnetic field B_EW (B_phi)
         b_ew = greens_d(freq_arr, EARTH_RADIUS, xs, ps, xm, pm, n_max=n_max, t=1, h=h)
@@ -101,22 +101,22 @@ def forward_tdte(
     # Apply finite decay time factor |I(omega)|^2 = 1 / (1 + omega^2 * tau^2)
     if tau > 0.0:
         source_factor = 1.0 / (1.0 + (omega * tau) ** 2)
-        Ez *= source_factor
+        E_z *= source_factor
         B_EW *= source_factor
         B_NS *= source_factor
 
     ret_key = str(ret).lower().replace("-", "_").replace(" ", "_")
     if ret_key == "all":
-        return SRSpectrum(freq=freq_arr, Er=Ez, B_NS=B_NS, B_EW=B_EW)
-    elif ret_key in ("er", "ez"):
-        return Ez
+        return SRSpectrum(freq=freq_arr, E_z=E_z, B_NS=B_NS, B_EW=B_EW)
+    elif ret_key in ("e_z", "ez", "er"):
+        return E_z
     elif ret_key in ("b_ns", "bns", "bt", "btheta"):
         return B_NS
     elif ret_key in ("b_ew", "bew", "bp", "bphi"):
         return B_EW
     else:
         raise ValueError(
-            f"Invalid return option '{ret}'. Expected 'all', 'er', 'b_ns', or 'b_ew'."
+            f"Invalid return option '{ret}'. Expected 'all', 'e_z', 'b_ns', or 'b_ew'."
         )
 
 
@@ -124,7 +124,7 @@ def forward_tdte_pole(
     theta: Union[float, Sequence[float], np.ndarray],
     s_int: Union[float, Sequence[float]],
     freq: Union[float, Sequence[float], np.ndarray],
-    n_max: int = 5000,
+    n_max: int = 10000,
     h: Union[str, HeightModel] = "mushtak",
     tau: float = 0.0,
     ret: str = "all",
@@ -146,13 +146,13 @@ def forward_tdte_pole(
     freq : float or array_like
         Frequencies [Hz].
     n_max : int, optional
-        Maximum Legendre summation order (default: 5000).
+        Maximum Legendre summation order (default: 10000).
     h : str or HeightModel, optional
         Height model selector (default: 'mushtak').
     tau : float, optional
         Decay time constant [s] (default: 0.0).
     ret : str, optional
-        Returned components ('all', 'er', 'b_ns', 'b_ew').
+        Returned components ('all', 'e_z', 'b_ns', 'b_ew').
 
     Returns
     -------
@@ -167,28 +167,28 @@ def forward_tdte_pole(
     cos_theta = np.cos(theta_rad)
 
     ez = greens_pole(freq_arr, cos_theta, EARTH_RADIUS, n_max=n_max, h=h)
-    Ez = np.abs(1000.0 * ez * (1j * omega * MU0 * hm) / (he ** 2)) ** 2 * s_int_val
+    E_z = np.abs(1000.0 * ez * (1j * omega * MU0 * hm) / (he ** 2)) ** 2 * s_int_val
 
     b_ew = greens_d_pole(freq_arr, cos_theta, EARTH_RADIUS, n_max=n_max, h=h)
     B_EW = np.abs(1.0e12 * b_ew * MU0 / (he * EARTH_RADIUS)) ** 2 * s_int_val
 
-    B_NS = np.zeros_like(Ez)
+    B_NS = np.zeros_like(E_z)
 
     if tau > 0.0:
         source_factor = 1.0 / (1.0 + (omega * tau) ** 2)
-        Ez *= source_factor
+        E_z *= source_factor
         B_EW *= source_factor
 
     ret_key = str(ret).lower().replace("-", "_").replace(" ", "_")
     if ret_key == "all":
-        return SRSpectrum(freq=freq_arr, Er=Ez, B_NS=B_NS, B_EW=B_EW)
-    elif ret_key in ("er", "ez"):
-        return Ez
+        return SRSpectrum(freq=freq_arr, E_z=E_z, B_NS=B_NS, B_EW=B_EW)
+    elif ret_key in ("e_z", "ez", "er"):
+        return E_z
     elif ret_key in ("b_ns", "bns", "bt", "btheta"):
         return B_NS
     elif ret_key in ("b_ew", "bew", "bp", "bphi"):
         return B_EW
     else:
         raise ValueError(
-            f"Invalid return option '{ret}'. Expected 'all', 'er', 'b_ns', or 'b_ew'."
+            f"Invalid return option '{ret}'. Expected 'all', 'e_z', 'b_ns', or 'b_ew'."
         )

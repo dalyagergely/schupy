@@ -18,7 +18,7 @@ pip install .
 
 ## Features
 
-- **`forward_tdte`**: General forward model for arbitrary source-observer configurations using Legendre polynomial series summation up to $n_{\text{max}} = 5000$ (Bozóki et al., 2019).
+- **`forward_tdte`**: General forward model for arbitrary source-observer configurations using Legendre polynomial series summation up to $n_{\text{max}} = 10000$ (Bozóki et al., 2019).
 - **`forward_tdte_pole`**: Fast axisymmetric forward model for sources located at the North Pole.
 - **`forward_hyper`**: Exact closed-form forward model using Gauss hypergeometric function ${}_2F_1$ (Prácser et al., 2021), eliminating truncation errors.
 - **`forward_hyper_pole`**: Exact closed-form polar forward model.
@@ -33,7 +33,7 @@ Horizontal magnetic field components are labeled according to the orientation of
 
 | Component | Description | Spherical Field Component | Measured In |
 |---|---|---|---|
-| **`Er`** | Vertical electric field | $E_r$ | $\text{mV}^2 / \text{m}^2 / \text{Hz}$ |
+| **`E_z`** | Vertical electric field | $E_z$ | $\text{mV}^2 / \text{m}^2 / \text{Hz}$ |
 | **`B_NS`** | Meridional horizontal magnetic field | $B_\theta$ | $\text{pT}^2 / \text{Hz}$ |
 | **`B_EW`** | Azimuthal horizontal magnetic field | $B_\varphi$ | $\text{pT}^2 / \text{Hz}$ |
 
@@ -69,12 +69,12 @@ spectrum = sp.forward_tdte(
 
 # Access fields as attributes or unpack
 print(spectrum.freq)
-print(spectrum.Er)
+print(spectrum.E_z)
 print(spectrum.B_NS)
 print(spectrum.B_EW)
 
 # Or unpack directly:
-Er, B_NS, B_EW = spectrum
+E_z, B_NS, B_EW = spectrum
 ```
 
 ### 2. Fast Exact Hypergeometric Model (`forward_hyper`)

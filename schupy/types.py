@@ -21,7 +21,7 @@ class SRSpectrum:
     ----------
     freq : np.ndarray
         Array of evaluation frequencies [Hz].
-    Er : np.ndarray
+    E_z : np.ndarray
         Vertical electric field power spectral density [mV^2 / m^2 / Hz].
     B_NS : np.ndarray
         Meridional horizontal magnetic field power spectral density [pT^2 / Hz],
@@ -31,14 +31,29 @@ class SRSpectrum:
         measured by an East-West oriented induction coil (detects B_phi).
     """
     freq: np.ndarray
-    Er: np.ndarray
+    E_z: np.ndarray
     B_NS: np.ndarray
     B_EW: np.ndarray
 
+    @property
+    def E_Z(self) -> np.ndarray:
+        """Alias for E_z."""
+        return self.E_z
+
+    @property
+    def Ez(self) -> np.ndarray:
+        """Alias for E_z."""
+        return self.E_z
+
+    @property
+    def Er(self) -> np.ndarray:
+        """Backwards-compatibility alias for E_z."""
+        return self.E_z
+
     def __iter__(self):
-        """Allow sequence unpacking: Er, B_NS, B_EW = res"""
-        return iter((self.Er, self.B_NS, self.B_EW))
+        """Allow sequence unpacking: E_z, B_NS, B_EW = res"""
+        return iter((self.E_z, self.B_NS, self.B_EW))
 
     def __getitem__(self, item):
         """Allow tuple-style indexing res[0], res[1], res[2]."""
-        return (self.Er, self.B_NS, self.B_EW)[item]
+        return (self.E_z, self.B_NS, self.B_EW)[item]

@@ -53,7 +53,7 @@ In Schumann resonance observatories, horizontal magnetic field components are re
 
 | Component | Physical Meaning | Spherical Field Component | Output Unit |
 |---|---|---|---|
-| **`Er`** | Vertical electric field | $E_r$ | $\text{mV}^2 / \text{m}^2 / \text{Hz}$ |
+| **`E_z`** | Vertical electric field | $E_z$ | $\text{mV}^2 / \text{m}^2 / \text{Hz}$ |
 | **`B_NS`** | Meridional magnetic field (along longitude) | $B_\theta$ | $\text{pT}^2 / \text{Hz}$ |
 | **`B_EW`** | Azimuthal magnetic field (along latitude) | $B_\varphi$ | $\text{pT}^2 / \text{Hz}$ |
 
@@ -75,9 +75,9 @@ In Schumann resonance observatories, horizontal magnetic field components are re
 
 | Function | Method | Best Used For |
 |---|---|---|
-| **`sp.forward_tdte(...)`** | Legendre polynomial series ($n=5000$) | Standard modeling for arbitrary global source-observer configurations. |
+| **`sp.forward_tdte(...)`** | Legendre polynomial series ($n=10000$) | Standard modeling for arbitrary global source-observer configurations. |
 | **`sp.forward_hyper(...)`** | Exact Gauss hypergeometric function ${}_2F_1$ | Exact analytical solution without series truncation errors. |
-| **`sp.forward_tdte_pole(...)`** | Legendre series ($n=5000$) with source at Pole | High-speed axisymmetric simulation parameterized by colatitude $\theta$. |
+| **`sp.forward_tdte_pole(...)`** | Legendre series ($n=10000$) with source at Pole | High-speed axisymmetric simulation parameterized by colatitude $\theta$. |
 | **`sp.forward_hyper_pole(...)`** | Hypergeometric ${}_2F_1$ with source at Pole | Exact closed-form axisymmetric polar simulation. |
 
 ---
@@ -114,12 +114,12 @@ result = sp.forward_tdte(
 
 # 4. Access output fields
 print("Frequencies:", result.freq[:5])
-print("Er (first 5 points):", result.Er[:5])
+print("E_z (first 5 points):", result.E_z[:5])
 print("B_NS (first 5 points):", result.B_NS[:5])
 print("B_EW (first 5 points):", result.B_EW[:5])
 
 # Alternatively, unpack directly like a tuple:
-Er, B_NS, B_EW = result
+E_z, B_NS, B_EW = result
 ```
 
 ---
@@ -144,7 +144,7 @@ freq = np.arange(4.0, 40.0, 0.1)
 # Summed power spectral density from all 3 incoherent source regions:
 spectrum = sp.forward_tdte(source_lats, source_lons, source_ints, obs_lat, obs_lon, freq)
 
-print(f"Max Er: {np.max(spectrum.Er):.4e} mV^2/m^2/Hz")
+print(f"Max E_z: {np.max(spectrum.E_z):.4e} mV^2/m^2/Hz")
 print(f"Max B_NS: {np.max(spectrum.B_NS):.4e} pT^2/Hz")
 print(f"Max B_EW: {np.max(spectrum.B_EW):.4e} pT^2/Hz")
 ```
@@ -196,12 +196,12 @@ exact_spectrum = sp.forward_hyper(
     h="mushtak"
 )
 
-# Return only Er array directly if preferred:
+# Return only E_z array directly if preferred:
 Er_only = sp.forward_hyper(
     s_lat=[10.0], s_lon=[10.0], s_int=[1.0e5],
     m_lat=47.6, m_lon=16.7,
     freq=freq,
-    ret="Er"
+    ret="E_z"
 )
 ```
 
@@ -248,9 +248,9 @@ spec = sp.forward_tdte(s_lat=[10.0], s_lon=[10.0], s_int=[1.0e5], m_lat=47.6, m_
 
 fig, axes = plt.subplots(3, 1, figsize=(8, 7), sharex=True)
 
-# 1. Electric field Er
-axes[0].plot(spec.freq, spec.Er, color="navy", lw=1.5)
-axes[0].set_ylabel(r"$E_r\ [\mathrm{mV^2 / m^2 / Hz}]$")
+# 1. Electric field E_z
+axes[0].plot(spec.freq, spec.E_z, color="navy", lw=1.5)
+axes[0].set_ylabel(r"$E_z\ [\mathrm{mV^2 / m^2 / Hz}]$")
 axes[0].grid(True, linestyle="--", alpha=0.6)
 axes[0].set_title("Schumann Resonance Spectra")
 
@@ -293,10 +293,10 @@ plt.show()
 
 When `ret="all"` (default), functions return an `SRSpectrum` instance:
 - **`spectrum.freq`**: Evaluation frequency array [Hz].
-- **`spectrum.Er`**: Vertical electric field power spectral density [$\text{mV}^2/\text{m}^2/\text{Hz}$].
+- **`spectrum.E_z`**: Vertical electric field power spectral density [$\text{mV}^2/\text{m}^2/\text{Hz}$].
 - **`spectrum.B_NS`**: North–South coil horizontal magnetic field PSD [$\text{pT}^2/\text{Hz}$].
 - **`spectrum.B_EW`**: East–West coil horizontal magnetic field PSD [$\text{pT}^2/\text{Hz}$].
-- Unpacking support: `Er, B_NS, B_EW = spectrum` or indexing `spectrum[0]`, `spectrum[1]`, `spectrum[2]`.
+- Unpacking support: `E_z, B_NS, B_EW = spectrum` or indexing `spectrum[0]`, `spectrum[1]`, `spectrum[2]`.
 
 ---
 

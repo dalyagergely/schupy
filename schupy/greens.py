@@ -43,7 +43,7 @@ def greens(
     ps: float,
     xm: float,
     pm: float,
-    n_max: int = 5000,
+    n_max: int = 10000,
     h: Union[str, HeightModel] = "mushtak",
 ) -> np.ndarray:
     """
@@ -64,7 +64,7 @@ def greens(
     pm : float
         Observer longitude in radians.
     n_max : int, optional
-        Maximum order of Legendre polynomials in the summation (default: 5000).
+        Maximum order of Legendre polynomials in the summation (default: 10000).
     h : str or HeightModel, optional
         Height model selector (default: 'mushtak').
 
@@ -100,7 +100,7 @@ def greens_d(
     ps: float,
     xm: float,
     pm: float,
-    n_max: int = 5000,
+    n_max: int = 10000,
     t: int = 1,
     h: Union[str, HeightModel] = "mushtak",
 ) -> np.ndarray:
@@ -116,7 +116,7 @@ def greens_d(
     xs, ps, xm, pm : float
         Spherical coordinates (sin(lat), lon in rad).
     n_max : int, optional
-        Maximum Legendre polynomial order (default: 5000).
+        Maximum Legendre polynomial order (default: 10000).
     t : int, optional
         Derivative component:
         t=1 -> d(cos gamma) / d(theta_m) for B_phi (East-West field, B_EW).
@@ -168,7 +168,7 @@ def greens_pole(
     freq: np.ndarray,
     cos_theta: float,
     R: float = EARTH_RADIUS,
-    n_max: int = 5000,
+    n_max: int = 10000,
     h: Union[str, HeightModel] = "mushtak",
 ) -> np.ndarray:
     """
@@ -196,7 +196,7 @@ def greens_d_pole(
     freq: np.ndarray,
     cos_theta: float,
     R: float = EARTH_RADIUS,
-    n_max: int = 5000,
+    n_max: int = 10000,
     h: Union[str, HeightModel] = "mushtak",
 ) -> np.ndarray:
     """

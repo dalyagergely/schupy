@@ -22,7 +22,7 @@ graph TD
     C --> C2[Fix assertion logic]
     C --> C3[Fix loop parameter shadowing]
     C --> C4[Rename to B_NS & B_EW]
-    C --> C5[Default n_max = 5000]
+    C --> C5[Default n_max=10000]
 
     D --> D1[Finite Decay Time tau - Bozóki 2025b]
     D --> D2[North-Pole Forward Models]
@@ -78,7 +78,7 @@ Correct the coil naming convention in all functions and documentation:
 - **Input mutation**: Replace in-place `s_int[i] = s_int[i] * 1e6` with `s_int = np.asarray(s_int, dtype=float) * 1e6` to avoid mutating caller data.
 - **Input validation**: Fix assertion to `assert len(s_lat) == len(s_lon) and len(s_lat) == len(s_int)`.
 - **Parameter shadowing**: In Legendre summations (`greens`, `greens_d`), rename the parameter to `n_max` and loop index to `n`.
-- **Legendre summation limit**: Increase default cutoff from $n=500$ to **$n_{\text{max}} = 5000$**.
+- **Legendre summation limit**: Increase default cutoff from $n=500$ to **$n_{\text{max}} = 10000$**.
 
 ### 4.3 Height Calculation Verification (Preserved with Modernized Signatures)
 The height models were verified against the reference literature and are preserved with clean function signatures:
@@ -106,7 +106,7 @@ For configurations where the source is located at the North Pole ($\theta'=0$):
       theta,
       s_int,
       freq,
-      n_max=5000,
+      n_max=10000,
       h="mushtak",
       tau=0.0,
       ret="all",
@@ -124,7 +124,7 @@ Functions to add:
 - `forward_hyper_pole(theta, s_int, freq, h="mushtak", tau=0.0, ret="all") -> SRSpectrum`
 
 ### 5.4 Structured Data Types
-- `SRSpectrum`: A lightweight dataclass/namedtuple container holding `(freq, Er, B_NS, B_EW)`.
+- `SRSpectrum`: A lightweight dataclass/namedtuple container holding `(freq, E_z, B_NS, B_EW)`.
 - `HeightModel`: Enum (`"mushtak"`, `"kulak"`).
 
 ---
@@ -142,7 +142,7 @@ schupy_repo/
     ├── constants.py            # Physical constants (eps0, mu0, R, c)
     ├── types.py                # SRSpectrum, HeightModel
     ├── heights.py              # height_mushtak, height_kulak
-    ├── greens.py               # Legendre-sum Green's functions (n_max=5000)
+    ├── greens.py               # Legendre-sum Green's functions (n_max=10000)
     ├── hyper.py                # Hypergeometric formulation (scipy.special.hyp2f1)
     ├── forward.py              # forward_tdte, forward_tdte_pole
     └── forward_hyper.py        # forward_hyper, forward_hyper_pole
@@ -172,10 +172,10 @@ dependencies = [
 
 | Function | Method / Reference | Returns | Description |
 |---|---|---|---|
-| `forward_tdte(...)` | Legendre series ($n=5000$), Bozóki 2019 | `SRSpectrum(Er, B_NS, B_EW)` | General arbitrary source-observer forward model |
-| `forward_tdte_pole(...)` | Legendre series ($n=5000$), Bozóki 2025b | `SRSpectrum(Er, 0, B_EW)` | Fast axisymmetric model (source at North Pole, $B_{NS}=0$) |
-| `forward_hyper(...)` | Hypergeometric ${}_2F_1$, Prácser 2021 | `SRSpectrum(Er, B_NS, B_EW)` | Exact closed-form uniform cavity forward model |
-| `forward_hyper_pole(...)` | Hypergeometric ${}_2F_1$, Prácser 2021 | `SRSpectrum(Er, 0, B_EW)` | Exact closed-form with pole source ($B_{NS}=0$) |
+| `forward_tdte(...)` | Legendre series ($n=10000$), Bozóki 2019 | `SRSpectrum(E_z, B_NS, B_EW)` | General arbitrary source-observer forward model |
+| `forward_tdte_pole(...)` | Legendre series ($n=10000$), Bozóki 2025b | `SRSpectrum(E_z, 0, B_EW)` | Fast axisymmetric model (source at North Pole, $B_{NS}=0$) |
+| `forward_hyper(...)` | Hypergeometric ${}_2F_1$, Prácser 2021 | `SRSpectrum(E_z, B_NS, B_EW)` | Exact closed-form uniform cavity forward model |
+| `forward_hyper_pole(...)` | Hypergeometric ${}_2F_1$, Prácser 2021 | `SRSpectrum(E_z, 0, B_EW)` | Exact closed-form with pole source ($B_{NS}=0$) |
 
 ---
 
@@ -190,4 +190,4 @@ Once approved, the implementation will be verified through the following checks:
 3. **Decay Time Benchmark ([Bozóki et al., 2025b](file:///d:/ELTE/doktori/Munka/SR/articles/bozoki2025b_text.txt))**:
    - Run forward models with $\tau = 0, 10, 20, 50$ ms and verify the progressive reddening of the spectra matching Figures 2–6.
 4. **Legendre Convergence Benchmark ([Bozóki et al., 2019](file:///d:/ELTE/doktori/Munka/SR/articles/bozoki2019_text.txt))**:
-   - Verify convergence behaviour up to $n=5000$.
+   - Verify convergence behaviour up to $n=10000$.

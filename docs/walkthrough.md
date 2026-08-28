@@ -16,7 +16,7 @@ The `schupy` package has been upgraded to **v2.0.0**, modernizing its architectu
   - **`B_EW`**: Azimuthal horizontal magnetic field ($B_\varphi$), measured by an East–West oriented induction coil.
 - **Input immutability**: Replaced in-place scaling of `s_int` with safe copying.
 - **Input validation**: Corrected assertion condition to ensure matching lengths across source arrays.
-- **Legendre summation limit**: Increased default series order from $n=500$ to **$n_{\text{max}} = 5000$**.
+- **Legendre summation limit**: Increased default series order from $n=500$ to **$n_{\text{max}} = 10000$**.
 - **Scope resolution**: Removed parameter shadowing of `n` in Legendre polynomial loops.
 
 ### 1.3 New Capabilities & Physics
@@ -27,7 +27,7 @@ The `schupy` package has been upgraded to **v2.0.0**, modernizing its architectu
 - **Exact Hypergeometric Closed-Form Formulation (`forward_hyper`)** ([Prácser et al., 2021](file:///d:/ELTE/doktori/Munka/SR/articles/pracser2021_text.txt)):
   Evaluates complex-order Legendre functions $P_\nu(-\cos\gamma)$ via Gauss hypergeometric functions ${}_2F_1$, eliminating truncation error.
 - **Structured Container (`SRSpectrum`)**:
-  Provides field access (`spec.Er`, `spec.B_NS`, `spec.B_EW`) and sequence unpacking (`Er, B_NS, B_EW = spec`).
+  Provides field access (`spec.E_z`, `spec.B_NS`, `spec.B_EW`) and sequence unpacking (`E_z, B_NS, B_EW = spec`).
 
 ---
 
@@ -44,7 +44,7 @@ schupy_repo/
     ├── constants.py            # EPS0, MU0, EARTH_RADIUS, SPEED_OF_LIGHT
     ├── types.py                # SRSpectrum, HeightModel
     ├── heights.py              # height_mushtak, height_kulak, get_heights
-    ├── greens.py               # Legendre-sum Green's functions (n_max=5000)
+    ├── greens.py               # Legendre-sum Green's functions (n_max=10000)
     ├── hyper.py                # Complex Gauss hypergeometric evaluation & derivatives
     ├── forward.py              # forward_tdte, forward_tdte_pole
     └── forward_hyper.py        # forward_hyper, forward_hyper_pole
@@ -60,36 +60,36 @@ All 6 test suites in [`tests/test_schupy.py`](file:///d:/ELTE/doktori/Munka/SR/s
 =======================================================
 --- Test 1: Basic forward calculation & Peak Detection ---
 Result type: <class 'schupy.types.SRSpectrum'>
-Er shape: (310,), max Er: 7.3227e-02 mV^2/m^2/Hz
+E_z shape: (310,), max E_z: 7.3227e-02 mV^2/m^2/Hz
 B_NS shape: (310,), max B_NS: 1.3600e-02 pT^2/Hz
 B_EW shape: (310,), max B_EW: 3.7731e-01 pT^2/Hz
-Detected SR peak frequencies in Er: [ 7.9 14.7 25.5 32.5] Hz
+Detected SR peak frequencies in E_z: [ 7.9 14.7 25.5 32.5] Hz
 Test 1 PASSED: Resonance peaks match physical expectations.
 
 --- Test 2: Consistency between Legendre and Hypergeometric methods ---
-Mean relative difference in Er: 0.0001%
-Max relative difference in Er: 0.0001%
+Mean relative difference in E_z: 0.0001%
+Max relative difference in E_z: 0.0001%
 Mean relative difference in B_EW: 1.1948%
 Mean relative difference in B_NS: 1.1948%
-Test 2 PASSED: Legendre (n=5000) and Hypergeometric match across all components.
+Test 2 PASSED: Legendre (n=10000) and Hypergeometric match across all components.
 
 --- Test 3: Polar source forward models (forward_tdte_pole & forward_hyper_pole) ---
 General pole B_NS max: 0.0000e+00 (identically 0)
 Simplified pole B_NS max: 0.0000e+00 (identically 0)
 General pole B_EW max: 3.7120e-01 (non-zero)
 Simplified pole B_EW max: 3.7120e-01 (non-zero)
-Pole Er relative difference (simp vs general): 0.0000%
+Pole E_z relative difference (simp vs general): 0.0000%
 Pole B_EW relative difference (simp vs general): 0.0000%
-Hyper pole Er relative difference: 0.0007%
+Hyper pole E_z relative difference: 0.0007%
 Test 3 PASSED: Polar source formulation verified.
 
 --- Test 4: Finite decay time (tau) verification ---
-Ratio Er(8Hz)/Er(20Hz) for tau=0ms:  3.518
-Ratio Er(8Hz)/Er(20Hz) for tau=50ms: 19.464
+Ratio E_z(8Hz)/E_z(20Hz) for tau=0ms:  3.518
+Ratio E_z(8Hz)/E_z(20Hz) for tau=50ms: 19.464
 Test 4 PASSED: Finite decay time correctly reddens the spectrum.
 
 --- Test 5: Kulak & Mlynarczyk (2013) height model ---
-Kulak max Er: 7.1866e-02 mV^2/m^2/Hz
+Kulak max E_z: 7.1866e-02 mV^2/m^2/Hz
 Test 5 PASSED: Kulak height model functions correctly.
 
 --- Test 6: Caller input list immutability & Unpacking ---
