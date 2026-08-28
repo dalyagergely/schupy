@@ -52,7 +52,7 @@ def forward_tdte(
     Returns
     -------
     result : SRSpectrum or np.ndarray
-        If ret='all', returns SRSpectrum(freq, E_z, B_NS, B_EW).
+        If ret='all', returns SRSpectrum(freq, E_Z, B_NS, B_EW).
         Otherwise returns the specified 1D numpy array.
     """
     s_lat_arr = np.atleast_1d(np.asarray(s_lat, dtype=float))
@@ -68,7 +68,7 @@ def forward_tdte(
     omega = 2.0 * np.pi * freq_arr
     he, hm = get_heights(freq_arr, h=h)
 
-    E_z = np.zeros(len(freq_arr), dtype=float)
+    E_Z = np.zeros(len(freq_arr), dtype=float)
     B_EW = np.zeros(len(freq_arr), dtype=float)
     B_NS = np.zeros(len(freq_arr), dtype=float)
 
@@ -80,10 +80,10 @@ def forward_tdte(
         xs = np.sin(np.radians(s_lat_arr[s]))
         ps = np.radians(s_lon_arr[s])
 
-        # Vertical electric field E_z
+        # Vertical electric field E_Z
         ez = greens(freq_arr, EARTH_RADIUS, xs, ps, xm, pm, n_max=n_max, h=h)
         ez_amp = np.abs(1000.0 * ez * (1j * omega * MU0 * hm) / (he ** 2)) ** 2
-        E_z += ez_amp * s_int_arr[s]
+        E_Z += ez_amp * s_int_arr[s]
 
         # East-West horizontal magnetic field B_EW (B_phi)
         b_ew = greens_d(freq_arr, EARTH_RADIUS, xs, ps, xm, pm, n_max=n_max, t=1, h=h)
@@ -101,15 +101,15 @@ def forward_tdte(
     # Apply finite decay time factor |I(omega)|^2 = 1 / (1 + omega^2 * tau^2)
     if tau > 0.0:
         source_factor = 1.0 / (1.0 + (omega * tau) ** 2)
-        E_z *= source_factor
+        E_Z *= source_factor
         B_EW *= source_factor
         B_NS *= source_factor
 
     ret_key = str(ret).lower().replace("-", "_").replace(" ", "_")
     if ret_key == "all":
-        return SRSpectrum(freq=freq_arr, E_z=E_z, B_NS=B_NS, B_EW=B_EW)
+        return SRSpectrum(freq=freq_arr, E_Z=E_Z, B_NS=B_NS, B_EW=B_EW)
     elif ret_key in ("e_z", "ez", "er"):
-        return E_z
+        return E_Z
     elif ret_key in ("b_ns", "bns", "bt", "btheta"):
         return B_NS
     elif ret_key in ("b_ew", "bew", "bp", "bphi"):
@@ -167,23 +167,23 @@ def forward_tdte_pole(
     cos_theta = np.cos(theta_rad)
 
     ez = greens_pole(freq_arr, cos_theta, EARTH_RADIUS, n_max=n_max, h=h)
-    E_z = np.abs(1000.0 * ez * (1j * omega * MU0 * hm) / (he ** 2)) ** 2 * s_int_val
+    E_Z = np.abs(1000.0 * ez * (1j * omega * MU0 * hm) / (he ** 2)) ** 2 * s_int_val
 
     b_ew = greens_d_pole(freq_arr, cos_theta, EARTH_RADIUS, n_max=n_max, h=h)
     B_EW = np.abs(1.0e12 * b_ew * MU0 / (he * EARTH_RADIUS)) ** 2 * s_int_val
 
-    B_NS = np.zeros_like(E_z)
+    B_NS = np.zeros_like(E_Z)
 
     if tau > 0.0:
         source_factor = 1.0 / (1.0 + (omega * tau) ** 2)
-        E_z *= source_factor
+        E_Z *= source_factor
         B_EW *= source_factor
 
     ret_key = str(ret).lower().replace("-", "_").replace(" ", "_")
     if ret_key == "all":
-        return SRSpectrum(freq=freq_arr, E_z=E_z, B_NS=B_NS, B_EW=B_EW)
+        return SRSpectrum(freq=freq_arr, E_Z=E_Z, B_NS=B_NS, B_EW=B_EW)
     elif ret_key in ("e_z", "ez", "er"):
-        return E_z
+        return E_Z
     elif ret_key in ("b_ns", "bns", "bt", "btheta"):
         return B_NS
     elif ret_key in ("b_ew", "bew", "bp", "bphi"):

@@ -33,7 +33,7 @@ Horizontal magnetic field components are labeled according to the orientation of
 
 | Component | Description | Spherical Field Component | Measured In |
 |---|---|---|---|
-| **`E_z`** | Vertical electric field | $E_z$ | $\text{mV}^2 / \text{m}^2 / \text{Hz}$ |
+| **`E_Z`** | Vertical electric field | $E_Z$ | $\text{mV}^2 / \text{m}^2 / \text{Hz}$ |
 | **`B_NS`** | Meridional horizontal magnetic field | $B_\theta$ | $\text{pT}^2 / \text{Hz}$ |
 | **`B_EW`** | Azimuthal horizontal magnetic field | $B_\varphi$ | $\text{pT}^2 / \text{Hz}$ |
 
@@ -69,12 +69,12 @@ spectrum = sp.forward_tdte(
 
 # Access fields as attributes or unpack
 print(spectrum.freq)
-print(spectrum.E_z)
+print(spectrum.E_Z)
 print(spectrum.B_NS)
 print(spectrum.B_EW)
 
 # Or unpack directly:
-E_z, B_NS, B_EW = spectrum
+E_Z, B_NS, B_EW = spectrum
 ```
 
 ### 2. Fast Exact Hypergeometric Model (`forward_hyper`)

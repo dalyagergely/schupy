@@ -59,7 +59,7 @@ def forward_hyper(
     nu = calc_nu(freq_arr, he, hm, R=EARTH_RADIUS)
     sin_nu_pi = np.sin(nu * np.pi)
 
-    E_z = np.zeros(len(freq_arr), dtype=float)
+    E_Z = np.zeros(len(freq_arr), dtype=float)
     B_EW = np.zeros(len(freq_arr), dtype=float)
     B_NS = np.zeros(len(freq_arr), dtype=float)
 
@@ -80,14 +80,14 @@ def forward_hyper(
         p_nu = eval_p_nu(nu, cos_gamma)
         dp_nu_dcg = eval_dp_nu_dcg(nu, cos_gamma)
 
-        # E_z component (mV / m / sqrt(Hz) per unit C*m)
+        # E_Z component (mV / m / sqrt(Hz) per unit C*m)
         er_amp = (
             1000.0
             * (1j * omega * MU0 * hm)
             / (4.0 * np.pi * he ** 2)
             * (-np.pi * p_nu / sin_nu_pi)
         )
-        E_z += np.abs(er_amp) ** 2 * s_int_arr[s]
+        E_Z += np.abs(er_amp) ** 2 * s_int_arr[s]
 
         # Derivatives of cos_gamma
         d_cg_d_theta_m = -sin_theta_m * xs + cos_theta_m * sin_theta_s * np.cos(pm - ps)
@@ -114,15 +114,15 @@ def forward_hyper(
 
     if tau > 0.0:
         source_factor = 1.0 / (1.0 + (omega * tau) ** 2)
-        E_z *= source_factor
+        E_Z *= source_factor
         B_EW *= source_factor
         B_NS *= source_factor
 
     ret_key = str(ret).lower().replace("-", "_").replace(" ", "_")
     if ret_key == "all":
-        return SRSpectrum(freq=freq_arr, E_z=E_z, B_NS=B_NS, B_EW=B_EW)
+        return SRSpectrum(freq=freq_arr, E_Z=E_Z, B_NS=B_NS, B_EW=B_EW)
     elif ret_key in ("e_z", "ez", "er"):
-        return E_z
+        return E_Z
     elif ret_key in ("b_ns", "bns", "bt", "btheta"):
         return B_NS
     elif ret_key in ("b_ew", "bew", "bp", "bphi"):
@@ -165,7 +165,7 @@ def forward_hyper_pole(
         / (4.0 * np.pi * he ** 2)
         * (-np.pi * p_nu / sin_nu_pi)
     )
-    E_z = np.abs(er_amp) ** 2 * s_int_val
+    E_Z = np.abs(er_amp) ** 2 * s_int_val
 
     # For pole source, d(cos theta)/d(theta) = -sin(theta)
     b_ew_amp = (
@@ -174,18 +174,18 @@ def forward_hyper_pole(
         * (np.pi * dp_nu_dcg * sin_theta / sin_nu_pi)
     )
     B_EW = np.abs(b_ew_amp) ** 2 * s_int_val
-    B_NS = np.zeros_like(E_z)
+    B_NS = np.zeros_like(E_Z)
 
     if tau > 0.0:
         source_factor = 1.0 / (1.0 + (omega * tau) ** 2)
-        E_z *= source_factor
+        E_Z *= source_factor
         B_EW *= source_factor
 
     ret_key = str(ret).lower().replace("-", "_").replace(" ", "_")
     if ret_key == "all":
-        return SRSpectrum(freq=freq_arr, E_z=E_z, B_NS=B_NS, B_EW=B_EW)
+        return SRSpectrum(freq=freq_arr, E_Z=E_Z, B_NS=B_NS, B_EW=B_EW)
     elif ret_key in ("e_z", "ez", "er"):
-        return E_z
+        return E_Z
     elif ret_key in ("b_ns", "bns", "bt", "btheta"):
         return B_NS
     elif ret_key in ("b_ew", "bew", "bp", "bphi"):

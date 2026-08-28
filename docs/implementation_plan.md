@@ -124,7 +124,7 @@ Functions to add:
 - `forward_hyper_pole(theta, s_int, freq, h="mushtak", tau=0.0, ret="all") -> SRSpectrum`
 
 ### 5.4 Structured Data Types
-- `SRSpectrum`: A lightweight dataclass/namedtuple container holding `(freq, E_z, B_NS, B_EW)`.
+- `SRSpectrum`: A lightweight dataclass/namedtuple container holding `(freq, E_Z, B_NS, B_EW)`.
 - `HeightModel`: Enum (`"mushtak"`, `"kulak"`).
 
 ---
@@ -172,10 +172,10 @@ dependencies = [
 
 | Function | Method / Reference | Returns | Description |
 |---|---|---|---|
-| `forward_tdte(...)` | Legendre series ($n=10000$), Bozóki 2019 | `SRSpectrum(E_z, B_NS, B_EW)` | General arbitrary source-observer forward model |
-| `forward_tdte_pole(...)` | Legendre series ($n=10000$), Bozóki 2025b | `SRSpectrum(E_z, 0, B_EW)` | Fast axisymmetric model (source at North Pole, $B_{NS}=0$) |
-| `forward_hyper(...)` | Hypergeometric ${}_2F_1$, Prácser 2021 | `SRSpectrum(E_z, B_NS, B_EW)` | Exact closed-form uniform cavity forward model |
-| `forward_hyper_pole(...)` | Hypergeometric ${}_2F_1$, Prácser 2021 | `SRSpectrum(E_z, 0, B_EW)` | Exact closed-form with pole source ($B_{NS}=0$) |
+| `forward_tdte(...)` | Legendre series ($n=10000$), Bozóki 2019 | `SRSpectrum(E_Z, B_NS, B_EW)` | General arbitrary source-observer forward model |
+| `forward_tdte_pole(...)` | Legendre series ($n=10000$), Bozóki 2025b | `SRSpectrum(E_Z, 0, B_EW)` | Fast axisymmetric model (source at North Pole, $B_{NS}=0$) |
+| `forward_hyper(...)` | Hypergeometric ${}_2F_1$, Prácser 2021 | `SRSpectrum(E_Z, B_NS, B_EW)` | Exact closed-form uniform cavity forward model |
+| `forward_hyper_pole(...)` | Hypergeometric ${}_2F_1$, Prácser 2021 | `SRSpectrum(E_Z, 0, B_EW)` | Exact closed-form with pole source ($B_{NS}=0$) |
 
 ---
 
