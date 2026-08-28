@@ -1,5 +1,19 @@
-.gitignore
-test.py
-__init__.py
-setup.py
-schupy.pdf
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Unit test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
