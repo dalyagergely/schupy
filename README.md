@@ -7,7 +7,7 @@
 ## Installation
 
 ```bash
-pip install .
+pip install schupy
 ```
 
 ### Dependencies
