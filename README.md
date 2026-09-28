@@ -18,18 +18,16 @@ pip install schupy
 
 ## Features
 
-- **`forward_tdte`**: General forward model for arbitrary source-observer configurations using Legendre polynomial series summation up to $n_{\text{max}} = 10000$ (Bozóki et al., 2019).
-- **`forward_tdte_pole`**: Fast axisymmetric forward model for sources located at the North Pole.
-- **`forward_hyper`**: Exact closed-form forward model using Gauss hypergeometric function ${}_2F_1$ (Prácser et al., 2021), eliminating truncation errors.
-- **`forward_hyper_pole`**: Exact closed-form polar forward model.
-- **Finite Decay Time (`tau`)**: Support for lightning continuing currents with exponential decay time constant $\tau$ (Bozóki et al., 2025b).
+- **`forward_tdte`**: General forward model for arbitrary source-observer configurations using Legendre polynomial series summation (Bozóki et al., 2019).
+- **`forward_tdte_pole`**: Fast axisymmetric forward model assuming that the source is located on the North Pole.
+- **`forward_hyper`**: Exact closed-form forward model using Gauss hypergeometric function (Prácser et al., 2021).
+- **`forward_hyper_pole`**: Exact closed-form assuming that the source is located on the North Pole.
+- **Finite Decay Time (`tau`)**: For simulating the effect of lightning continuing currents (Bozóki et al., 2025).
 - **Height Models**: Mushtak & Williams (2002) knee model and Kulak & Mlynarczyk (2013) day/night model.
 
 ---
 
-## Magnetic Field Naming Convention
-
-Horizontal magnetic field components are labeled according to the orientation of the measuring induction coils:
+## Field Components
 
 | Component | Description | Spherical Field Component | Measured In |
 |---|---|---|---|
@@ -106,7 +104,7 @@ spec_pole = sp.forward_tdte_pole(
 ### 4. Lightning with Continuing Current (`tau > 0`)
 
 ```python
-# Model lightning with a 20 ms decay time constant (Bozóki et al., 2025b)
+# Model lightning with a 20 ms decay time constant (Bozóki et al., 2025)
 spec_cc = sp.forward_tdte(
     s_lat=[0.0],
     s_lon=[0.0],

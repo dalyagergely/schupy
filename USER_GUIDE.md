@@ -1,6 +1,7 @@
 # Schupy v2.0: User Guide & Quickstart
 
-`schupy` is a Python library for numerical modeling and analytical simulation of **Schumann resonances (SRs)** in the Earth–ionosphere cavity resonator (< 100 Hz).
+`schupy` is an open-source Python package aimed at modeling and analyzing **Schumann resonances (SRs)**, the global electromagnetic resonances of the Earth-ionosphere cavity 
+ resonator in the extremely low frequency (ELF) band (<100 Hz).
 
 ---
 
@@ -30,12 +31,12 @@
 ### Install from source
 Navigate to the `schupy_repo` directory and install using `pip`:
 ```bash
-pip install .
+pip install schupy
 ```
 
 For development (editable install):
 ```bash
-pip install -e .
+pip install -e schupy
 ```
 
 Verify the installation in Python:
@@ -48,8 +49,7 @@ print(sp.__version__)  # Outputs: 2.0.0
 
 ## 2. Key Concepts & Conventions
 
-### Magnetic Field Coil Naming
-In Schumann resonance observatories, horizontal magnetic field components are recorded by induction coil magnetometers. `schupy` labels them by the **orientation of the coil axis**:
+### Field Components
 
 | Component | Physical Meaning | Spherical Field Component | Output Unit |
 |---|---|---|---|
@@ -78,7 +78,7 @@ In Schumann resonance observatories, horizontal magnetic field components are re
 | **`sp.forward_tdte(...)`** | Legendre polynomial series ($n=10000$) | Standard modeling for arbitrary global source-observer configurations. |
 | **`sp.forward_hyper(...)`** | Exact Gauss hypergeometric function ${}_2F_1$ | Exact analytical solution without series truncation errors. |
 | **`sp.forward_tdte_pole(...)`** | Legendre series ($n=10000$) with source at Pole | High-speed axisymmetric simulation parameterized by colatitude $\theta$. |
-| **`sp.forward_hyper_pole(...)`** | Hypergeometric ${}_2F_1$ with source at Pole | Exact closed-form axisymmetric polar simulation. |
+| **`sp.forward_hyper_pole(...)`** | Hypergeometric ${}_2F_1$ with source at Pole | Exact closed-form axisymmetric simulation parameterized by colatitude $\theta$. |
 
 ---
 
@@ -141,7 +141,7 @@ obs_lat = 47.6
 obs_lon = 16.7
 freq = np.arange(4.0, 40.0, 0.1)
 
-# Summed power spectral density from all 3 incoherent source regions:
+# Summed power spectral density from all 3 source regions:
 spectrum = sp.forward_tdte(source_lats, source_lons, source_ints, obs_lat, obs_lon, freq)
 
 print(f"Max E_Z: {np.max(spectrum.E_Z):.4e} mV^2/m^2/Hz")
@@ -209,7 +209,7 @@ Er_only = sp.forward_hyper(
 
 ### Example 5: Axisymmetric North-Pole Geometry
 
-When studying idealized source-observer distance $\theta$ (colatitude in degrees):
+When studying the effect of source-observer distance:
 
 ```python
 import schupy as sp
@@ -284,7 +284,7 @@ plt.show()
 | `m_lon` | `float` | *Required* | Observer longitude in degrees. |
 | `freq` | `array_like` | *Required* | Evaluation frequencies in Hz (e.g. `np.arange(4, 35, 0.1)`). |
 | `theta` | `float` | *Required (pole)* | Colatitude / angular distance from North Pole in degrees. |
-| `n_max` | `int` | `5000` | Maximum order of Legendre polynomials summed in `forward_tdte`. |
+| `n_max` | `int` | `10000` | Maximum order of Legendre polynomials summed in `forward_tdte`. |
 | `h` | `str` | `"mushtak"` | Height calculation model (`"mushtak"` or `"kulak"`). |
 | `tau` | `float` | `0.0` | Continuing current decay time constant $\tau$ in seconds. |
 | `ret` | `str` | `"all"` | Return selector: `"all"`, `"er"`, `"b_ns"`, or `"b_ew"`. |
